@@ -1337,6 +1337,8 @@ function renderizarLog() {
     elements.logContainer.innerHTML = '';
 
     state.logEntries.forEach(entry => {
+        if (!entry.acao) return;
+        if (entry.acao == null) return;
         const logItem = document.createElement('div');
         logItem.className = 'log-item';
         logItem.innerHTML = `
