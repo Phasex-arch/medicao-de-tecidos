@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-theme="light">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
+    <title>Dashboard Clínico Phase-X</title>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- MQTT.js -->
+    <script src="https://unpkg.com/mqtt@5.3.5/dist/mqtt.min.js"></script>
+</head>
+
+<body>
+    <!-- Overlay para fechar menu mobile -->
+    <div class="overlay" id="overlay"></div>
+
+    <div class="dashboard">
+        <!-- Coluna Esquerda - Lista de Pacientes -->
+        <div class="patients-column" id="patientsColumn">
+            <div class="patients-header">
+                <div class="patients-title-container">
+                    <div class="patients-title">
+                        <i class="fas fa-users"></i>
+                        <span>Pacientes em Análise</span>
+                    </div>
+                    <button class="close-sidebar" id="closeSidebar">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+
+                <div class="search-container">
+                    <i class="fas fa-magnifying-glass search-icon"></i>
+                    <input type="text" class="search-input" id="searchInput" placeholder="Buscar por nome ou código...">
+                </div>
+
+                <div class="filters">
+                    <button class="filter-btn active" data-filter="all">
+                        <i class="fas fa-list"></i>
+                        <span>Todos</span>
+                    </button>
+                    <button class="filter-btn" data-filter="em_processo">
+                        <i class="fas fa-microscope"></i>
+                        <span>Processo</span>
+                    </button>
+                    <button class="filter-btn" data-filter="em_revisao">
+                        <i class="fas fa-eye"></i>
+                        <span>Em Revisão</span>
+                    </button>
+                    <button class="filter-btn" data-filter="concluido">
+                        <i class="fas fa-check"></i>
+                        <span>Concluído</span>
+                    </button>
+                </div>
+            </div>
+
+            <div class="patients-list" id="patientsList">
+                <!-- Lista de pacientes será preenchida via JavaScript -->
+            </div>
+        </div>
+
+        <!-- Coluna Direita - Painel de Informações -->
+        <div class="info-column">
+            <div class="info-header">
+                <div class="header-left">
+                    <button class="mobile-toggle" id="mobileToggle">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                    <h1 class="header-title">Dashboard Clínico Phase-X</h1>
+                </div>
+                <button class="theme-toggle" id="themeToggle">
+                    <i class="fas fa-moon"></i>
+                </button>
+            </div>
+
+            <div class="info-content" id="infoContent">
+                <div class="empty-state" id="emptyState">
+                    <i class="fas fa-user-injured" style="font-size: 3rem; margin-bottom: 15px;"></i>
+                    <h3>Nenhum paciente selecionado</h3>
+                    <p>Selecione um paciente da lista para visualizar os detalhes</p>
+                </div>
+
+                <!-- Identificação e Administrativos -->
+                <div class="info-card hidden" id="identificacaoCard">
+                    <h2 class="card-title">
+                        <i class="fas fa-user"></i>
+                        Identificação e Administrativos
+                    </h2>
+                    <div class="card-grid" id="identificacaoGrid">
+                        <!-- Conteúdo será preenchido via JavaScript -->
+                    </div>
+                </div>
+
+                <!-- Dados Clínicos -->
+                <div class="info-card hidden" id="clinicosCard">
+                    <h2 class="card-title">
+                        <i class="fas fa-stethoscope"></i>
+                        Dados Clínicos
+                    </h2>
+                    <div class="card-grid" id="clinicosGrid">
+                        <!-- Conteúdo será preenchido via JavaScript -->
+                    </div>
+                </div>
+
+                <!-- Macroscopia -->
+                <div class="info-card hidden" id="macroscopiaCard">
+                    <h2 class="card-title">
+                        <i class="fas fa-search"></i>
+                        Macroscopia
+                    </h2>
+                    <div id="macroscopiaContent">
+                        <!-- Conteúdo será preenchido via JavaScript -->
+                    </div>
+                </div>
+
+                <!-- Microscopia -->
+                <div class="info-card hidden" id="microscopiaCard">
+                    <h2 class="card-title">
+                        <i class="fas fa-microscope"></i>
+                        Microscopia
+                    </h2>
+                    <div id="microscopiaContent">
+                        <!-- Conteúdo será preenchido via JavaScript -->
+                    </div>
+                </div>
+
+                <!-- Conclusão Diagnóstica -->
+                <div class="info-card hidden" id="conclusaoCard">
+                    <h2 class="card-title">
+                        <i class="fas fa-file-medical"></i>
+                        Conclusão Diagnóstica
+                    </h2>
+                    <div id="conclusaoContent">
+                        <!-- Conteúdo será preenchido via JavaScript -->
+                    </div>
+                </div>
+
+                <!-- Complementares -->
+                <div class="info-card hidden" id="complementaresCard">
+                    <h2 class="card-title">
+                        <i class="fas fa-dna"></i>
+                        Complementares
+                    </h2>
+                    <div id="complementaresContent">
+                        <!-- Conteúdo será preenchido via JavaScript -->
+                    </div>
+                </div>
+
+                <!-- Controles da Máquina -->
+                <div class="info-card hidden" id="controlesCard">
+                    <h2 class="card-title">
+                        <i class="fas fa-cogs"></i>
+                        Controles da Máquina
+                    </h2>
+
+                    <div class="controls">
+                        <button class="control-btn btn-iniciar" id="btnIniciar">
+                            <i class="fas fa-vial"></i>
+                            Iniciar Análise
+                        </button>
+                        <button class="control-btn btn-em-revisao" id="btnEmRevisao">
+                            <i class="fas fa-eye"></i>
+                            Enviar para Revisão
+                        </button>
+                        <button class="control-btn btn-concluir" id="btnConcluir">
+                            <i class="fas fa-check"></i>
+                            Concluir
+                        </button>
+                    </div>
+
+                    <div class="log-container" id="logContainer">
+                        <!-- Log será preenchido via JavaScript -->
+                    </div>
+                </div>
+
+                <!-- Indicadores Técnicos -->
+                <div class="info-card hidden" id="indicadoresCard">
+                    <h2 class="card-title">
+                        <i class="fas fa-chart-line"></i>
+                        Indicadores Técnicos
+                    </h2>
+
+                    <div class="indicators" id="indicatorsGrid">
+                        <!-- Indicadores serão preenchidos via JavaScript -->
+                    </div>
+
+                    <div class="update-notice" id="updateNotice">
+                        <i class="fas fa-sync"></i>
+                        <span>Dados atualizados às <span id="lastUpdateTime">--:--</span></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="credentials.js"></script>
+    <script src="script.js"></script>
+
+</body>
+
+</html>
