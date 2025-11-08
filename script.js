@@ -19,6 +19,9 @@ const mqttConfig = {
 
 // Função para conectar ao MQTT
 function conectarMQTT() {
+    const loadingElement = document.getElementById('loading');
+    loadingElement.classList.remove('hidden'); // Mostra o loading
+
     try {
         if (!mqttClient || !mqttClient.connected) {
             mqttClient = mqtt.connect(mqttConfig.broker, mqttConfig.options);
@@ -26,18 +29,25 @@ function conectarMQTT() {
             mqttClient.on('connect', function () {
                 console.log('✅ Conectado ao broker MQTT');
                 adicionarLog('Conexão MQTT estabelecida');
+                loadingElement.classList.add('hidden'); // Esconde o loading
             });
 
             mqttClient.on('error', function (error) {
                 console.error('❌ Erro MQTT:', error);
+                loadingElement.classList.add('hidden'); // Esconde o loading em caso de erro
             });
 
             mqttClient.on('reconnect', function () {
                 console.log('🔄 Reconectando ao MQTT...');
+                // Se você quiser mostrar o loading novamente durante a reconexão, descomente a linha abaixo
+                // loadingElement.classList.remove('hidden');
             });
+        } else {
+            loadingElement.classList.add('hidden'); // Esconde o loading se já estiver conectado
         }
     } catch (error) {
         console.error('❌ Erro ao conectar MQTT:', error);
+        loadingElement.classList.add('hidden'); // Esconde o loading em caso de erro
     }
 }
 

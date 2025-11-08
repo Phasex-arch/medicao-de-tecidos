@@ -850,3 +850,36 @@ body {
 ::-webkit-scrollbar-thumb:hover {
     background: var(--px-title);
 }
+
+/* Loading Visual */
+.loading {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(255, 255, 255, 0.8); /* Fundo semi-transparente */
+    z-index: 100; /* Certifique-se de que está acima de outros elementos */
+}
+
+.spinner {
+    border: 8px solid #f3f3f3; /* Cor do fundo */
+    border-top: 8px solid #3498db; /* Cor do spinner */
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.hidden {
+    display: none;
+}
